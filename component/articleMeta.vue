@@ -69,10 +69,6 @@ export default {
       this.status = false;
     },
   },
-  //生命周期 - 挂载之后
-  mounted() {
-    console.log(this.article);
-  },
 };
 </script>
 
