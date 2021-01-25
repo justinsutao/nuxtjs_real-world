@@ -28,7 +28,7 @@
             </li>
             <li class="nav-item">
             <nuxt-link class="nav-link"
-                       :to="'/profile/' + user.id">
+                       :to="{name: 'profile' ,params:{username: user.username} }">
               <img :src="user.image" class="user-pic">
               {{user.username}}
             </nuxt-link>

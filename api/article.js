@@ -53,10 +53,11 @@ export const createArticle = data => {
   })
 }
 //编辑文章
-export const editArticle = slug => {
+export const editArticle = (slug,data) => {
   return request({
     method: "PUT",
     url: `/api/articles/${slug}`,
+    data
   })
 }
 //删除文章
@@ -64,6 +65,5 @@ export const deleteArticle = slug => {
   return request({
     method: "DELETE",
     url: `/api/articles/${slug}`,
-    data
   })
 }

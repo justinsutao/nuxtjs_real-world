@@ -7,16 +7,21 @@
         <div class="row">
 
           <div class="col-xs-12 col-md-10 offset-md-1">
-            <img src="http://i.imgur.com/Qr71crq.jpg"
+            <img :src="profile.image"
                  class="user-img" />
-            <h4>Eric Simons</h4>
+            <h4>{{profile.username}}</h4>
             <p>
-              Cofounder @GoThinkster, lived in Aol's HQ for a few months, kinda looks like Peeta from the Hunger Games
+              {{profile.bio}}
             </p>
-            <button class="btn btn-sm btn-outline-secondary action-btn">
+            <button v-if="$route.params.username===user.username" class="btn btn-sm btn-outline-secondary action-btn">
               <i class="ion-plus-round"></i>
               &nbsp;
-              Follow Eric Simons
+              Edit Profiles Settings
+            </button>
+             <button v-else class="btn btn-sm btn-outline-secondary action-btn">
+              <i class="ion-plus-round"></i>
+              &nbsp;
+              Follow {{profile.username}}
             </button>
           </div>
 
@@ -26,64 +31,72 @@
 
     <div class="container">
       <div class="row">
-
         <div class="col-xs-12 col-md-10 offset-md-1">
           <div class="articles-toggle">
             <ul class="nav nav-pills outline-active">
               <li class="nav-item">
-                <a class="nav-link active"
-                   href="">My Articles</a>
+                <a class="nav-link"
+                   href="javascript:void(0)"
+                   :class="{active: mine}"
+                   @click="mine = true"
+                   >My Articles</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link"
-                   href="">Favorited Articles</a>
+                   href="javascript:void(0)"
+                    :class="{active: !mine}"
+                   @click="mine = false"
+                   >Favorited Articles</a>
               </li>
             </ul>
           </div>
 
-          <div class="article-preview">
-            <div class="article-meta">
-              <a href=""><img src="http://i.imgur.com/Qr71crq.jpg" /></a>
-              <div class="info">
-                <a href=""
-                   class="author">Eric Simons</a>
-                <span class="date">January 20th</span>
+          <template v-if="mine">
+            <div class="article-preview"
+                 v-for="item in myArticles"
+                 :key="item.slug">
+              <div class="article-meta">
+                <nuxt-link :to="{name: 'profile', params: {username: item.author.username}}"><img :src="item.author.image" /></nuxt-link>
+                <div class="info">
+                  <a href=""
+                     class="author">{{item.author.username}}</a>
+                  <span class="date">{{item.createdAt | date('MMM DD, YYYY')}}</span>
+                </div>
+                <button class="btn btn-outline-primary btn-sm pull-xs-right">
+                  <i class="ion-heart"></i> {{item.favoritesCount}}
+                </button>
               </div>
-              <button class="btn btn-outline-primary btn-sm pull-xs-right">
-                <i class="ion-heart"></i> 29
-              </button>
+              <nuxt-link :to="{name:'articleIndex', params: {slug: item.slug}}"
+                         class="preview-link">
+                <h1>{{item.title}}</h1>
+                <p>{{item.description}}</p>
+                <span>Read more...</span>
+              </nuxt-link>
             </div>
-            <a href=""
-               class="preview-link">
-              <h1>How to build webapps that scale</h1>
-              <p>This is the description for the post.</p>
-              <span>Read more...</span>
-            </a>
-          </div>
-
-          <div class="article-preview">
-            <div class="article-meta">
-              <a href=""><img src="http://i.imgur.com/N4VcUeJ.jpg" /></a>
-              <div class="info">
-                <a href=""
-                   class="author">Albert Pai</a>
-                <span class="date">January 20th</span>
+          </template>
+          <template v-else>
+            <div class="article-preview"
+                 v-for="item in favoriteArticles"
+                 :key="item.slug">
+              <div class="article-meta">
+                <nuxt-link :to="{name: 'profile', params: {username: item.author.username}}"><img :src="item.author.image" /></nuxt-link>
+                <div class="info">
+                  <a href=""
+                     class="author">{{item.author.username}}</a>
+                  <span class="date">{{item.createdAt | date('MMM DD, YYYY')}}</span>
+                </div>
+                <button class="btn btn-outline-primary btn-sm pull-xs-right">
+                  <i class="ion-heart"></i> {{item.favoritesCount}}
+                </button>
               </div>
-              <button class="btn btn-outline-primary btn-sm pull-xs-right">
-                <i class="ion-heart"></i> 32
-              </button>
+              <nuxt-link :to="{name:'articleIndex', params: {slug: item.slug}}"
+                         class="preview-link">
+                <h1>{{item.title}}</h1>
+                <p>{{item.description}}</p>
+                <span>Read more...</span>
+              </nuxt-link>
             </div>
-            <a href=""
-               class="preview-link">
-              <h1>The song you won't ever stop singing. No matter how hard you try.</h1>
-              <p>This is the description for the post.</p>
-              <span>Read more...</span>
-              <ul class="tag-list">
-                <li class="tag-default tag-pill tag-outline">Music</li>
-                <li class="tag-default tag-pill tag-outline">Song</li>
-              </ul>
-            </a>
-          </div>
+          </template>
 
         </div>
 
@@ -94,18 +107,37 @@
 </template>
 
 <script>
+import { getProfile } from "@/api/user.js";
+import { getArticles, addFavorite, removeFavorite } from "@/api/article.js";
+import { mapState } from "vuex";
 export default {
-  name: 'profile',
-  middleware: 'authenticated',
+  name: "profile",
+  middleware: "authenticated",
   data() {
-    return {};
+    return {
+      profile: {},
+      myArticles: [],
+      favoriteArticles: [],
+      mine: true,
+    };
   },
 
   components: {},
 
-  computed: {},
-
-  methods: {}
+  computed: {
+    ...mapState(["user"])
+  },
+  async mounted() {
+    const username = this.$route.params.username;
+    const { data } = await getProfile(username);
+    this.profile = data.profile;
+    const userArticles = await getArticles({ author: username });
+    this.myArticles = userArticles.data.articles;
+    const fArticles = await getArticles({ favorited: username });
+    this.favoritedArticles = fArticles.data.articles;
+    console.log(fArticles.data.articles);
+  },
+  methods: {},
 };
 </script>
 <style scoped>

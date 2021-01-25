@@ -38,6 +38,11 @@ export default {
             },
             {
               path: '/editor',
+              name: 'editNewArticle',
+              component: resolve(__dirname, 'pages/editor')
+            },
+            {
+              path: '/editor/:slug',
               name: 'editor',
               component: resolve(__dirname, 'pages/editor')
             },
