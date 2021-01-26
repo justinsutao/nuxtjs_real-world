@@ -58,7 +58,6 @@
     async mounted() {
       const {data} = await getComments(this.article.slug)
       this.comments= data.comments
-      console.log(data.comments);
     },
   }
 </script>

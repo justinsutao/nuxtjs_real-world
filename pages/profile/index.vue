@@ -135,7 +135,6 @@ export default {
     this.myArticles = userArticles.data.articles;
     const fArticles = await getArticles({ favorited: username });
     this.favoriteArticles = fArticles.data.articles;
-    console.log(fArticles.data.articles);
   },
   methods: {},
 };
