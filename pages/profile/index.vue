@@ -129,12 +129,12 @@ export default {
   },
   async mounted() {
     const username = this.$route.params.username;
-    const { data } = await getProfile(username);
-    this.profile = data.profile;
-    const userArticles = await getArticles({ author: username });
-    this.myArticles = userArticles.data.articles;
-    const fArticles = await getArticles({ favorited: username });
-    this.favoriteArticles = fArticles.data.articles;
+    const { data } = await getProfile(username)
+    this.profile = data.profile
+    const userArticles = await getArticles({ author: username })
+    this.myArticles = userArticles.data.articles
+    const fArticles = await getArticles({ favorited: username })
+    this.favoriteArticles = fArticles.data.articles
   },
   methods: {},
 };
