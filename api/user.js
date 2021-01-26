@@ -37,3 +37,11 @@ export const getProfile = username => {
     url: `/api/profiles/${username}`,
   })
 }
+//更新用户信息
+export const updateUser = data => {
+  return request({
+    method: "PUT",
+    url: `/api/user`,
+    data
+  })
+}

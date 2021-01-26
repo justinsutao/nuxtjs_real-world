@@ -13,7 +13,7 @@
             <p>
               {{profile.bio}}
             </p>
-            <button v-if="$route.params.username===user.username" class="btn btn-sm btn-outline-secondary action-btn">
+            <button v-if="$route.params.username===user.username" class="btn btn-sm btn-outline-secondary action-btn" @click="$router.push('/settings')">
               <i class="ion-plus-round"></i>
               &nbsp;
               Edit Profiles Settings
@@ -134,7 +134,7 @@ export default {
     const userArticles = await getArticles({ author: username });
     this.myArticles = userArticles.data.articles;
     const fArticles = await getArticles({ favorited: username });
-    this.favoritedArticles = fArticles.data.articles;
+    this.favoriteArticles = fArticles.data.articles;
     console.log(fArticles.data.articles);
   },
   methods: {},
